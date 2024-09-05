@@ -67,6 +67,7 @@ def index():
             # else:
             #     results.append({"company": company, "orgnrs": ["Not found"]})
             print(search_results)
+            time.sleep(0.5) #anti spamming measure
             
             # if search_results != "No results found":
                 # orgnrs = extract_orgnr_from_results(raw_search_results)
