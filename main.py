@@ -42,7 +42,8 @@ def index():
             
             if search_results:
                 orgnr = search_results[0].get('orgnr', 'Not found')
-                results.append({"company": company, "orgnrs": [orgnr]})
+                real_company_name = search_results[0].get('jurnamn', 'Not found')
+                results.append({"company": real_company_name, "orgnrs": [orgnr]})
             else:
                 results.append({"company": company, "orgnrs": ["Not found"]})
             
