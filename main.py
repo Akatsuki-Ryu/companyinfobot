@@ -34,8 +34,14 @@ def index():
             raw_search_results = search_company(company)
             search_results = extract_search_results(raw_search_results)
             
-            # Write search results to a file and beautify it
-            with open(f"{company}_search_results.json", "w", encoding="utf-8") as f:
+            # Write search results to a file in the scrapedata folder and beautify it
+            import os
+            
+            # Create the scrapedata folder if it doesn't exist
+            os.makedirs('scrapedata', exist_ok=True)
+            
+            # Write the file to the scrapedata folder
+            with open(os.path.join('scrapedata', f"{company}_search_results.json"), "w", encoding="utf-8") as f:
                 json.dump(search_results, f, ensure_ascii=False, indent=4)
 
             
