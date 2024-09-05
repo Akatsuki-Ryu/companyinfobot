@@ -30,6 +30,9 @@ def index():
     results = []
     if request.method == 'POST':
         company_list = request.form['company_list'].split('\n')
+        # if the company list is too long, more than 10 companies, ask the user to enter only 10 companies at a time
+        if len(company_list) > 10:
+            return render_template('index.html', results=results, error="Please enter only 10 companies at a time")
         for company in company_list:
             raw_search_results = search_company(company)
             search_results = extract_search_results(raw_search_results)
