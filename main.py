@@ -12,9 +12,11 @@ def search_company(company_name):
     }
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.content, 'html.parser')
-    results = soup.find_all(class_="search-hit")
-    print(results)
-    return [result.text for result in results]
+    results = soup.find_all(class_="search-results")
+    # save the results to a file as an example 
+    with open('sample_results.txt', 'w') as f:
+        f.write(str(results[0]))
+    return results[0]
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -23,8 +25,9 @@ def index():
         results = []
         for company in company_list:
             search_results = search_company(company)
+            print(search_results)
             if search_results:
-                results.append(f"{company}: {search_results[0]}")
+                results.append(f"{company}: {search_results}")
             else:
                 results.append(f"{company}: Not found")
             time.sleep(2)  # Add a 2-second delay between requests
