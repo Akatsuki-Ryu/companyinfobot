@@ -70,6 +70,8 @@ def index():
                 # results.append({"company": company, "orgnrs": orgnrs})
             # else:
                 # results.append({"company": company, "orgnrs": ["Not found"]})
+    #clean the results list for the next iteration
+    results = []
     return render_template('index.html', results=results)
 
 if __name__ == '__main__':
