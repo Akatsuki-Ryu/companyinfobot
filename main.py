@@ -1,3 +1,4 @@
+import json
 from flask import Flask, render_template, request
 import requests
 from bs4 import BeautifulSoup
@@ -32,13 +33,32 @@ def index():
         for company in company_list:
             raw_search_results = search_company(company)
             search_results = extract_search_results(raw_search_results)
+            
+            # Write search results to a file and beautify it
+            with open(f"{company}_search_results.json", "w", encoding="utf-8") as f:
+                json.dump(search_results, f, ensure_ascii=False, indent=4)
+
+            
+            
+            if search_results:
+                orgnr = search_results[0].get('orgnr', 'Not found')
+                results.append({"company": company, "orgnrs": [orgnr]})
+            else:
+                results.append({"company": company, "orgnrs": ["Not found"]})
+            
+            # Original code for future use
+            # if search_results:
+            #     orgnrs = [result.get('orgnr', 'Not found') for result in search_results]
+            #     results.append({"company": company, "orgnrs": orgnrs})
+            # else:
+            #     results.append({"company": company, "orgnrs": ["Not found"]})
             print(search_results)
+            
             # if search_results != "No results found":
                 # orgnrs = extract_orgnr_from_results(raw_search_results)
                 # results.append({"company": company, "orgnrs": orgnrs})
             # else:
                 # results.append({"company": company, "orgnrs": ["Not found"]})
-            time.sleep(2)  # Add a 2-second delay between requests
     return render_template('index.html', results=results)
 
 if __name__ == '__main__':
