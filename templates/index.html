@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Org Number Finder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Company Org Number Finder</h1>
+        <form id="companyForm">
+            <textarea id="companyList" rows="10" placeholder="Enter company names, one per line">Polestar</textarea>
+            <button type="submit">Find Org Numbers</button>
+        </form>
+        <div id="results"></div>
+    </div>
+    <script>
+        document.getElementById('companyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const companyList = document.getElementById('companyList').value;
+            const response = await fetch('/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `company_list=${encodeURIComponent(companyList)}`
+            });
+            const results = await response.json();
+            document.getElementById('results').innerHTML = results.join('<br>');
+        });
+    </script>
+</body>
+</html>
