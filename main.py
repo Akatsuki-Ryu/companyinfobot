@@ -43,9 +43,13 @@ def index():
             if search_results:
                 orgnr = search_results[0].get('orgnr', 'Not found')
                 real_company_name = search_results[0].get('jurnamn', 'Not found')
-                results.append({"company": real_company_name, "orgnrs": [orgnr]})
+                industry = search_results[0].get('abv_hgrupp', 'Not found')
+                if company != real_company_name:
+                    results.append({"remarks": "company name mismatch", "company": company, "real_company_name": real_company_name, "orgnrs": [orgnr], "industry": industry})
+                else:
+                    results.append({"company": company, "orgnrs": [orgnr], "industry": industry})
             else:
-                results.append({"company": company, "orgnrs": ["Not found"]})
+                results.append({"company": company, "orgnrs": ["Not found"], "industry": "Not found"})
             
             # Original code for future use
             # if search_results:

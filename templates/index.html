@@ -16,19 +16,28 @@
         <div id="results">
             {% if results %}
                 <h2>Search Results:</h2>
-                <table border="1">
+                <table border="1" style="width: 100%;">
                     <tr>
+
                         <th>Company Name</th>
+                        <th>Real Company Name</th>
                         <th>Organization Numbers</th>
+                        <th>Industry</th>
+                        <th>Remarks</th>
                     </tr>
                     {% for result in results %}
                         <tr>
                             <td>{{ result.company }}</td>
+                            <td>{{ result.real_company_name }}</td>
                             <td>
                                 {% for orgnr in result.orgnrs %}
                                     {{ orgnr }}<br>
                                 {% endfor %}
                             </td>
+                            <td>{{ result.industry }}</td>
+                            {% if result.remarks %}
+                                <td>{{ result.remarks }}</td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
