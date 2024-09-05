@@ -29,6 +29,8 @@ def extract_orgnr_from_results(results):
 def index():
     results = []
     if request.method == 'POST':
+            #clean the results list for the next iteration
+        results = []
         company_list = request.form['company_list'].split('\n')
         # if the company list is too long, more than 10 companies, ask the user to enter only 10 companies at a time
         if len(company_list) > 10:
