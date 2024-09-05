@@ -9,24 +9,31 @@
 <body>
     <div class="container">
         <h1>Company Org Number Finder</h1>
-        <form id="companyForm">
-            <textarea id="companyList" rows="10" placeholder="Enter company names, one per line">Polestar</textarea>
+        <form id="companyForm" method="POST">
+            <textarea id="companyList" name="company_list" rows="10" placeholder="Enter company names, one per line">Polestar</textarea>
             <button type="submit">Find Org Numbers</button>
         </form>
-        <div id="results"></div>
+        <div id="results">
+            {% if results %}
+                <h2>Search Results:</h2>
+                <table border="1">
+                    <tr>
+                        <th>Company Name</th>
+                        <th>Organization Numbers</th>
+                    </tr>
+                    {% for result in results %}
+                        <tr>
+                            <td>{{ result.company }}</td>
+                            <td>
+                                {% for orgnr in result.orgnrs %}
+                                    {{ orgnr }}<br>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div>
     </div>
-    <script>
-        document.getElementById('companyForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const companyList = document.getElementById('companyList').value;
-            const response = await fetch('/', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `company_list=${encodeURIComponent(companyList)}`
-            });
-            const results = await response.json();
-            document.getElementById('results').innerHTML = results.join('<br>');
-        });
-    </script>
 </body>
 </html>

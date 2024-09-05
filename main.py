@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 import requests
 from bs4 import BeautifulSoup
 import time
-
+from extract_search_results import extract_search_results
 app = Flask(__name__)
 
 def search_company(company_name):
@@ -13,26 +13,33 @@ def search_company(company_name):
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.content, 'html.parser')
     results = soup.find_all(class_="search-results")
-    # save the results to a file as an example 
-    with open('sample_results.txt', 'w') as f:
-        f.write(str(results[0]))
-    return results[0]
+    return str(results[0]) if results else "No results found"
+
+def extract_orgnr_from_results(results):
+    soup = BeautifulSoup(results, 'html.parser')
+    orgnrs = []
+    for result in soup.find_all('search'):
+        orgnr = result.get('orgnr')
+        if orgnr:
+            orgnrs.append(orgnr)
+    return orgnrs
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    results = []
     if request.method == 'POST':
         company_list = request.form['company_list'].split('\n')
-        results = []
         for company in company_list:
-            search_results = search_company(company)
+            raw_search_results = search_company(company)
+            search_results = extract_search_results(raw_search_results)
             print(search_results)
-            if search_results:
-                results.append(f"{company}: {search_results}")
-            else:
-                results.append(f"{company}: Not found")
+            # if search_results != "No results found":
+                # orgnrs = extract_orgnr_from_results(raw_search_results)
+                # results.append({"company": company, "orgnrs": orgnrs})
+            # else:
+                # results.append({"company": company, "orgnrs": ["Not found"]})
             time.sleep(2)  # Add a 2-second delay between requests
-        return jsonify(results)
-    return render_template('index.html')
+    return render_template('index.html', results=results)
 
 if __name__ == '__main__':
     app.run(debug=True)
