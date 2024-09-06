@@ -5,6 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Org Number Finder</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function disableSubmit() {
+            var submitButton = document.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.style.backgroundColor = '#cccccc';
+            submitButton.style.cursor = 'not-allowed';
+            submitButton.textContent = 'Processing...';
+        }
+
+        function clearCSV() {
+            if (confirm('Are you sure you want to clear the CSV file? This action cannot be undone.')) {
+                fetch('/clear_csv', { method: 'POST' })
+                    .then(response => response.text())
+                    .then(message => {
+                        alert(message);
+                        location.reload();
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+
+        function downloadCSV() {
+            window.location.href = '{{ url_for('download_csv') }}';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('companyForm');
+            form.addEventListener('submit', function(event) {
+                var companyList = document.getElementById('companyList').value.trim();
+                if (companyList === '') {
+                    event.preventDefault();
+                    alert('Please enter at least one company name.');
+                } else {
+                    disableSubmit();
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -13,12 +51,19 @@
             <textarea id="companyList" name="company_list" rows="10" placeholder="Enter company names, one per line"></textarea>
             <button type="submit">Find Org Numbers</button>
         </form>
+        <div class="button-group">
+            <button onclick="downloadCSV()" class="download-btn">Download CSV</button>
+            <button onclick="clearCSV()" class="clear-btn">Clear CSV</button>
+        </div>
         <div id="results">
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
             {% if results %}
                 <h2>Search Results:</h2>
+
                 <table border="1" style="width: 100%;">
                     <tr>
-
                         <th>Company Name</th>
                         <th>Real Company Name</th>
                         <th>Organization Numbers</th>
