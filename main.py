@@ -1,9 +1,10 @@
 import json
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file, jsonify
 import requests
 from bs4 import BeautifulSoup
 import time
 from extract_search_results import extract_search_results
+import os
 app = Flask(__name__)
 
 def search_company(company_name):
@@ -62,6 +63,15 @@ def index():
                     results.append({"remarks": "company name mismatch", "company": company, "real_company_name": real_company_name, "orgnrs": [orgnr], "industry": industry})
                 else:
                     results.append({"company": company, "orgnrs": [orgnr], "industry": industry})
+                #write the results to a csv file, appending the results to the csv file
+                import csv
+                with open('results.csv', 'a', newline='', encoding='utf-8') as f:
+                    writer = csv.writer(f)
+                    # if the file is empty, write the header
+                    if f.tell() == 0:
+                        writer.writerow(["Company Name", "Real Company Name", "Organization Number", "Industry", "Remarks"])
+                    for result in results:
+                        writer.writerow([result["company"], result["real_company_name"], result["orgnrs"][0], result["industry"], result.get("remarks", "")])
             else:
                 results.append({"company": company, "orgnrs": ["Not found"], "industry": "Not found"})
             
