@@ -117,7 +117,7 @@ def index():
 def download_csv():
     csv_path = 'resultsdata/results.csv'
     if os.path.exists(csv_path):
-        return send_file(csv_path, as_attachment=True, download_name='company_results.csv')
+        return send_file(csv_path, as_attachment=True, download_name='company_orgnr_results.csv')
     else:
         return "No results available for download", 404
 
