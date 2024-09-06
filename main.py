@@ -92,5 +92,25 @@ def index():
 
     return render_template('index.html', results=results)
 
+@app.route('/download_csv')
+def download_csv():
+    csv_path = 'results.csv'
+    if os.path.exists(csv_path):
+        return send_file(csv_path, as_attachment=True, download_name='company_results.csv')
+    else:
+        return "No results available for download", 404
+
+@app.route('/clear_csv', methods=['POST'])
+def clear_csv():
+    csv_path = 'results.csv'
+    try:
+        if os.path.exists(csv_path):
+            os.remove(csv_path)
+            return "CSV file cleared successfully", 200
+        else:
+            return "No CSV file found", 404
+    except Exception as e:
+        return f"An error occurred: {str(e)}", 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
