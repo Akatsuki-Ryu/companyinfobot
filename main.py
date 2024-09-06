@@ -75,7 +75,7 @@ def index():
                 industry = search_results[0].get('abv_hgrupp', 'Not found')
                 url = formulate_url(orgnr)
                 if company != real_company_name:
-                    results.append({"remarks": "company name mismatch", "company": company, "real_company_name": real_company_name, "orgnrs": [orgnr], "industry": industry, "url": url})
+                    results.append({"remarks": "check company name", "company": company, "real_company_name": real_company_name, "orgnrs": [orgnr], "industry": industry, "url": url})
                 else:
                     results.append({"remarks": "", "company": company,"real_company_name": real_company_name, "orgnrs": [orgnr], "industry": industry, "url": url})
                 #write the results to a csv file, appending the results to the csv file
@@ -90,7 +90,7 @@ def index():
                     writer = csv.writer(f)
                     # if the file is empty, write the header
                     if f.tell() == 0:
-                        writer.writerow(["Company Name", "Real Company Name", "Organization Number", "Industry", "URL", "Remarks"])
+                        writer.writerow(["Query Company Name", "Real Company Name", "Organization Number", "Industry", "URL", "Remarks"])
                     for result in results:
                         writer.writerow([result["company"], result["real_company_name"], result["orgnrs"][0], result["industry"], result["url"], result.get("remarks", "")])
             else:
