@@ -7,6 +7,6 @@ services:
       - "5001:5001"
     volumes:
       - ./scrapedata:/app/scrapedata
-      - ./results.csv:/app/results.csv
+      - ./resultsdata:/app/resultsdata
     environment:
       - FLASK_ENV=development
