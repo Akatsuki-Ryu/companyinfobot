@@ -68,6 +68,7 @@
                         <th>Real Company Name</th>
                         <th>Organization Numbers</th>
                         <th>Industry</th>
+                        <th>URL</th>
                         <th>Remarks</th>
                     </tr>
                     {% for result in results %}
@@ -80,6 +81,7 @@
                                 {% endfor %}
                             </td>
                             <td>{{ result.industry }}</td>
+                            <td><a href="{{ result.url }}" target="_blank">{{ result.url }}</a></td>
                             {% if result.remarks %}
                                 <td>{{ result.remarks }}</td>
                             {% endif %}

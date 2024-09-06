@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 import time
 from extract_search_results import extract_search_results
 import os
+
+from fomulateurl import formulate_url
 app = Flask(__name__)
 
 def search_company(company_name):
@@ -71,19 +73,20 @@ def index():
                 orgnr = search_results[0].get('orgnr', 'Not found')
                 real_company_name = search_results[0].get('jurnamn', 'Not found')
                 industry = search_results[0].get('abv_hgrupp', 'Not found')
+                url = formulate_url(orgnr)
                 if company != real_company_name:
-                    results.append({"remarks": "company name mismatch", "company": company, "real_company_name": real_company_name, "orgnrs": [orgnr], "industry": industry})
+                    results.append({"remarks": "company name mismatch", "company": company, "real_company_name": real_company_name, "orgnrs": [orgnr], "industry": industry, "url": url})
                 else:
-                    results.append({"company": company, "orgnrs": [orgnr], "industry": industry})
+                    results.append({"remarks": "", "company": company,"real_company_name": real_company_name, "orgnrs": [orgnr], "industry": industry, "url": url})
                 #write the results to a csv file, appending the results to the csv file
                 import csv
                 with open('results.csv', 'a', newline='', encoding='utf-8') as f:
                     writer = csv.writer(f)
                     # if the file is empty, write the header
                     if f.tell() == 0:
-                        writer.writerow(["Company Name", "Real Company Name", "Organization Number", "Industry", "Remarks"])
+                        writer.writerow(["Company Name", "Real Company Name", "Organization Number", "Industry", "URL", "Remarks"])
                     for result in results:
-                        writer.writerow([result["company"], result["real_company_name"], result["orgnrs"][0], result["industry"], result.get("remarks", "")])
+                        writer.writerow([result["company"], result["real_company_name"], result["orgnrs"][0], result["industry"], result["url"], result.get("remarks", "")])
             else:
                 results.append({"company": company, "orgnrs": ["Not found"], "industry": "Not found"})
             
