@@ -8,6 +8,17 @@ import os
 app = Flask(__name__)
 
 def search_company(company_name):
+    #preprocess the company name to remove special characters and spaces, and make it lowercase,replace the space with %20
+    company_name = company_name.replace(" ", "%20") 
+    company_name = company_name.replace("ä", "a")
+    company_name = company_name.replace("ö", "o")
+    company_name = company_name.replace("å", "a")
+    company_name = company_name.replace("é", "e")
+    company_name = company_name.replace("á", "a")
+    company_name = company_name.replace("í", "i")
+    company_name = company_name.replace("ó", "o")
+    company_name = company_name.replace("ú", "u")
+    company_name = company_name.replace("ü", "u")
     url = f"https://www.allabolag.se/what/{company_name}"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -56,6 +67,7 @@ def index():
             
             
             if search_results:
+                #only get the first result from the search results
                 orgnr = search_results[0].get('orgnr', 'Not found')
                 real_company_name = search_results[0].get('jurnamn', 'Not found')
                 industry = search_results[0].get('abv_hgrupp', 'Not found')
