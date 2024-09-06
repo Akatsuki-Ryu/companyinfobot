@@ -115,7 +115,7 @@ def index():
 
 @app.route('/download_csv')
 def download_csv():
-    csv_path = 'results.csv'
+    csv_path = 'resultsdata/results.csv'
     if os.path.exists(csv_path):
         return send_file(csv_path, as_attachment=True, download_name='company_results.csv')
     else:
@@ -123,7 +123,7 @@ def download_csv():
 
 @app.route('/clear_csv', methods=['POST'])
 def clear_csv():
-    csv_path = 'results.csv'
+    csv_path = 'resultsdata/results.csv'
     try:
         if os.path.exists(csv_path):
             os.remove(csv_path)
