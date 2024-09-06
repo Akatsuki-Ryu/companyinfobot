@@ -80,7 +80,13 @@ def index():
                     results.append({"remarks": "", "company": company,"real_company_name": real_company_name, "orgnrs": [orgnr], "industry": industry, "url": url})
                 #write the results to a csv file, appending the results to the csv file
                 import csv
-                with open('results.csv', 'a', newline='', encoding='utf-8') as f:
+                import os
+
+                # Create the resultsdata folder if it doesn't exist
+                os.makedirs('resultsdata', exist_ok=True)
+
+                csv_path = os.path.join('resultsdata', 'results.csv')
+                with open(csv_path, 'a', newline='', encoding='utf-8') as f:
                     writer = csv.writer(f)
                     # if the file is empty, write the header
                     if f.tell() == 0:
