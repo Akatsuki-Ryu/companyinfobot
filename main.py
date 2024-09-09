@@ -56,9 +56,11 @@ def index():
         company_list = [company.strip() for company in company_list if company.strip()]
         
         if not company_list:
+            query_process_flag = False
             return render_template('index.html', results=results, error="Please enter at least one company name.")
         
         if len(company_list) > 100:
+            query_process_flag = False
             return render_template('index.html', results=results, error="Please enter only 100 companies at a time")
         
         #make a progress bar
