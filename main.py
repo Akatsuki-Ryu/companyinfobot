@@ -39,9 +39,16 @@ def extract_orgnr_from_results(results):
             orgnrs.append(orgnr)
     return orgnrs
 
+progress = 0
+total = 0
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     results = []
+    global progress 
+    global total
+    progress = 0
+    total = 0
     if request.method == 'POST':
         company_list = request.form.get('company_list', '').split('\n')
         company_list = [company.strip() for company in company_list if company.strip()]
@@ -51,6 +58,11 @@ def index():
         
         if len(company_list) > 10:
             return render_template('index.html', results=results, error="Please enter only 10 companies at a time")
+        
+        #make a progress bar
+
+        total = len(company_list)
+        progress = 0
         
         for company in company_list:
             raw_search_results = search_company(company)
@@ -104,6 +116,7 @@ def index():
             #     results.append({"company": company, "orgnrs": ["Not found"]})
             print(search_results)
             time.sleep(0.5) #anti spamming measure
+            progress += 1
             
             # if search_results != "No results found":
                 # orgnrs = extract_orgnr_from_results(raw_search_results)
@@ -111,7 +124,7 @@ def index():
             # else:
                 # results.append({"company": company, "orgnrs": ["Not found"]})
 
-    return render_template('index.html', results=results)
+    return render_template('index.html', results=results, total=total)
 
 @app.route('/download_csv')
 def download_csv():
@@ -132,6 +145,12 @@ def clear_csv():
             return "No CSV file found", 404
     except Exception as e:
         return f"An error occurred: {str(e)}", 500
+
+@app.route('/get_progress', methods=['GET'])
+def get_progress():
+    global progress
+    global total
+    return jsonify({"progress": progress, "total": total})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)

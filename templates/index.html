@@ -30,6 +30,20 @@
             window.location.href = '{{ url_for('download_csv') }}';
         }
 
+        function getProgress() {
+            //get progress from server,once every 0.3 second
+            setInterval(function() {
+                fetch('/get_progress', { method: 'GET' })
+                    .then(response => response.json())
+                .then(data => {
+                    document.getElementById('progressContainer').style.display = 'block';
+                    document.getElementById('progressBar').style.width = (data.progress / data.total) * 100 + '%';
+                    document.getElementById('progressText').textContent = 'Process: ' + data.progress + '/' + data.total;
+                })
+                    .catch(error => console.error('Error:', error));
+            }, 300);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             var form = document.getElementById('companyForm');
             form.addEventListener('submit', function(event) {
@@ -39,9 +53,11 @@
                     alert('Please enter at least one company name.');
                 } else {
                     disableSubmit();
+                    getProgress();
                 }
             });
         });
+
     </script>
 </head>
 <body>
@@ -54,6 +70,10 @@
         <div class="button-group">
             <button onclick="downloadCSV()" class="download-btn">Download CSV</button>
             <button onclick="clearCSV()" class="clear-btn">Clear CSV</button>
+        </div>
+        <div id="progressContainer" style="display: none;">
+            <div id="progressBar" style="width: 0%; height: 20px; background-color: #4CAF50; transition: width 0.5s;"></div>
+            <div id="progressText">Process: {{ progress }}/{{ total }}</div>
         </div>
         <div id="results">
             {% if error %}
