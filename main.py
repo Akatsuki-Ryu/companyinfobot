@@ -48,8 +48,6 @@ def index():
     results = []
     global progress 
     global total
-    progress = 0
-    total = 0
     if request.method == 'POST':
         #start the query process
         global query_process_flag
@@ -123,15 +121,17 @@ def index():
             # else:
             #     results.append({"company": company, "orgnrs": ["Not found"]})
             print(search_results)
-            time.sleep(0.5) #anti spamming measure
             progress += 1
+            time.sleep(0.5) #anti spamming measure
+
             
             # if search_results != "No results found":
                 # orgnrs = extract_orgnr_from_results(raw_search_results)
                 # results.append({"company": company, "orgnrs": orgnrs})
             # else:
                 # results.append({"company": company, "orgnrs": ["Not found"]})
-
+        query_process_flag = False
+        time.sleep(2)
     return render_template('index.html', results=results, total=total)
 
 @app.route('/download_csv')
@@ -159,6 +159,11 @@ def get_progress():
     global progress
     global total
     return jsonify({"progress": progress, "total": total})
+
+@app.route('/get_query_process_flag', methods=['GET'])
+def get_query_process_flag():
+    global query_process_flag
+    return jsonify({"query_process_flag": query_process_flag})
 
 @app.route('/terminate', methods=['GET'])
 def terminate():

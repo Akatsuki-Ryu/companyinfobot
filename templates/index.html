@@ -36,7 +36,7 @@
         }
 
         function getProgress() {
-            //get progress from server,once every 0.3 second
+            //get progress from server,once every 0.5 second
             setInterval(function() {
                 fetch('/get_progress', { method: 'GET' })
                     .then(response => response.json())
@@ -44,10 +44,31 @@
                     document.getElementById('progressContainer').style.display = 'block';
                     document.getElementById('progressBar').style.width = (data.progress / data.total) * 100 + '%';
                     document.getElementById('progressText').textContent = 'Process: ' + data.progress + '/' + data.total;
+                    if (data.progress == data.total) {
+                        //reload the page
+                        location.reload();
+                    }
                 })
                     .catch(error => console.error('Error:', error));
-            }, 300);
+            }, 500);
         }
+        function observeProgress() {
+            //get progress from server,once every 0.5 second
+            setInterval(function() {
+                fetch('/get_progress', { method: 'GET' })
+                    .then(response => response.json())
+                .then(data => {
+                    document.getElementById('progressContainer').style.display = 'block';
+                    document.getElementById('progressBar').style.width = (data.progress / data.total) * 100 + '%';
+                    document.getElementById('progressText').textContent = 'Process: ' + data.progress + '/' + data.total;
+                    if (data.progress == data.total) {
+                        document.getElementById('progressContainer').style.display = 'none';
+                    }
+                })
+                    .catch(error => console.error('Error:', error));
+            }, 500);
+        }
+
 
         function terminateQuery() {
             //only make a request to the server to terminate the query
@@ -75,6 +96,25 @@
             });
         });
 
+        function checkQueryProcessFlag() {
+            fetch('/get_query_process_flag', { method: 'GET' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.query_process_flag)    
+                        if (data.query_process_flag ) {
+                            console.log("queue running ")
+                            alert("there is another query running, please wait for it to finish or terminate it")
+                        disableSubmit();
+                        showTerminateButton();
+                        getProgress();
+                        }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+    document.addEventListener('DOMContentLoaded', function() {
+            checkQueryProcessFlag();
+        });
     </script>
 </head>
 <body>
