@@ -14,6 +14,11 @@
             submitButton.textContent = 'Processing...';
         }
 
+        function showTerminateButton() {
+            var terminateButton = document.querySelector('button[type="button"]');
+            terminateButton.style.display = 'block';
+        }
+
         function clearCSV() {
             if (confirm('Are you sure you want to clear the CSV file? This action cannot be undone.')) {
                 fetch('/clear_csv', { method: 'POST' })
@@ -44,6 +49,17 @@
             }, 300);
         }
 
+        function terminateQuery() {
+            //only make a request to the server to terminate the query
+            fetch('/terminate', { method: 'GET' })
+                .then(response => response.text())
+                .then(message => {
+                    alert(message);
+                    location.reload();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             var form = document.getElementById('companyForm');
             form.addEventListener('submit', function(event) {
@@ -53,6 +69,7 @@
                     alert('Please enter at least one company name.');
                 } else {
                     disableSubmit();
+                    showTerminateButton();
                     getProgress();
                 }
             });
@@ -66,6 +83,7 @@
         <form id="companyForm" method="POST">
             <textarea id="companyList" name="company_list" rows="10" placeholder="Enter company names, one per line, 10 entities max"></textarea>
             <button type="submit">Find Org Numbers</button>
+            <button type="button" onclick="terminateQuery()" style="display: none;" class="clear-btn">Terminate Query</button>
         </form>
         <div class="button-group">
             <button onclick="downloadCSV()" class="download-btn">Download CSV</button>

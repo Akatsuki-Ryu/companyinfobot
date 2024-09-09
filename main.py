@@ -41,6 +41,7 @@ def extract_orgnr_from_results(results):
 
 progress = 0
 total = 0
+query_process_flag = False
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -50,6 +51,9 @@ def index():
     progress = 0
     total = 0
     if request.method == 'POST':
+        #start the query process
+        global query_process_flag
+        query_process_flag = True
         company_list = request.form.get('company_list', '').split('\n')
         company_list = [company.strip() for company in company_list if company.strip()]
         
@@ -65,6 +69,10 @@ def index():
         progress = 0
         
         for company in company_list:
+            if not query_process_flag:
+                #if the query process is terminated, break the loop
+                break
+
             raw_search_results = search_company(company)
             search_results = extract_search_results(raw_search_results)
             
@@ -151,6 +159,14 @@ def get_progress():
     global progress
     global total
     return jsonify({"progress": progress, "total": total})
+
+@app.route('/terminate', methods=['GET'])
+def terminate():
+    global query_process_flag
+    query_process_flag = False
+    return "Backend Query process terminated", 200
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
