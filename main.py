@@ -58,8 +58,8 @@ def index():
         if not company_list:
             return render_template('index.html', results=results, error="Please enter at least one company name.")
         
-        if len(company_list) > 10:
-            return render_template('index.html', results=results, error="Please enter only 10 companies at a time")
+        if len(company_list) > 100:
+            return render_template('index.html', results=results, error="Please enter only 100 companies at a time")
         
         #make a progress bar
 
