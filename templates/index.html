@@ -35,6 +35,10 @@
             window.location.href = '{{ url_for('download_csv') }}';
         }
 
+        function clearCompanyList() {
+            document.getElementById('companyList').value = '';
+        }
+
         function getProgress() {
             //get progress from server,once every 0.5 second
             setInterval(function() {
@@ -83,6 +87,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            clearCompanyList();
             var form = document.getElementById('companyForm');
             form.addEventListener('submit', function(event) {
                 var companyList = document.getElementById('companyList').value.trim();
