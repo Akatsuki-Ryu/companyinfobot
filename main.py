@@ -115,7 +115,10 @@ def index():
                     if f.tell() == 0:
                         writer.writerow(["Query Company Name", "Real Company Name", "Organization Number", "Industry", "URL", "Remarks"])
                     for result in results:
-                        writer.writerow([result["company"], result["real_company_name"], result["orgnrs"][0], result["industry"], result["url"], result.get("remarks", "")])
+                        try:
+                            writer.writerow([result["company"], result["real_company_name"], result["orgnrs"][0], result["industry"], result["url"], result.get("remarks", "")])
+                        except Exception as e:
+                            print(e)
             else:
                 results.append({"company": company, "orgnrs": ["Not found"], "industry": "Not found"})
             
