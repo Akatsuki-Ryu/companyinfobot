@@ -154,7 +154,7 @@ def index():
             #     results.append({"company": company, "orgnrs": ["Not found"]})
             print(search_results)
             progress += 1
-            time.sleep(1) #anti spamming measure
+            # time.sleep(0.5) #anti spamming measure
 
             
             # if search_results != "No results found":
