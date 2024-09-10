@@ -25,6 +25,7 @@ def search_company(company_name):
     company_name = company_name.replace("'", "")
     company_name = company_name.replace("!", "")
     company_name = company_name.replace("/", "%20")
+    company_name = company_name.replace("&", "%26")
     url = f"https://www.allabolag.se/what/{company_name}"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -81,7 +82,18 @@ def index():
                 break
 
             raw_search_results = search_company(company)
-            search_results = extract_search_results(raw_search_results)
+            try:
+                search_results = extract_search_results(raw_search_results)
+            except Exception as e:
+                #if the search results are not found, try again after 2 seconds, try 5 times, ignore the error
+                for i in range(5):
+                    time.sleep(2)
+                    try:
+                        search_results = extract_search_results(raw_search_results)
+                    except Exception as e:
+                        continue
+                    if search_results:
+                        break
             
             # Write search results to a file in the scrapedata folder and beautify it
             import os
