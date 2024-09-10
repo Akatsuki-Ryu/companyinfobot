@@ -44,10 +44,6 @@
                     document.getElementById('progressContainer').style.display = 'block';
                     document.getElementById('progressBar').style.width = (data.progress / data.total) * 100 + '%';
                     document.getElementById('progressText').textContent = 'Process: ' + data.progress + '/' + data.total;
-                    if (data.progress == data.total) {
-                        //reload the page
-                        location.reload();
-                    }
                 })
                     .catch(error => console.error('Error:', error));
             }, 500);
@@ -62,11 +58,16 @@
                     document.getElementById('progressBar').style.width = (data.progress / data.total) * 100 + '%';
                     document.getElementById('progressText').textContent = 'Process: ' + data.progress + '/' + data.total;
                     if (data.progress == data.total) {
-                        document.getElementById('progressContainer').style.display = 'none';
+                        // document.getElementById('progressContainer').style.display = 'none';
+                        //wait for 1 sec
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                        return;
                     }
                 })
                     .catch(error => console.error('Error:', error));
-            }, 500);
+            }, 1000);
         }
 
 
@@ -106,7 +107,7 @@
                             alert("there is another query running, please wait for it to finish or terminate it")
                         disableSubmit();
                         showTerminateButton();
-                        getProgress();
+                        observeProgress();
                         }
                 })
                 .catch(error => console.error('Error:', error));
