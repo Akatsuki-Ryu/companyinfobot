@@ -49,6 +49,8 @@ def index():
     global progress 
     global total
     if request.method == 'POST':
+        if query_process_flag:
+            return render_template('index.html', results=results, error="Please wait for the previous query to finish or terminate it")
         #start the query process
         global query_process_flag
         query_process_flag = True
