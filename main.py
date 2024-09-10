@@ -21,6 +21,10 @@ def search_company(company_name):
     company_name = company_name.replace("ó", "o")
     company_name = company_name.replace("ú", "u")
     company_name = company_name.replace("ü", "u")
+    company_name = company_name.replace(":", "")
+    company_name = company_name.replace("'", "")
+    company_name = company_name.replace("!", "")
+    company_name = company_name.replace("/", "%20")
     url = f"https://www.allabolag.se/what/{company_name}"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
