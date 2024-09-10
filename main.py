@@ -108,8 +108,9 @@ def index():
             # Create the scrapedata folder if it doesn't exist
             os.makedirs('scrapedata', exist_ok=True)
             
+            company_name = company_name_preprocessing(company)
             # Write the file to the scrapedata folder
-            with open(os.path.join('scrapedata', f"{company}_search_results.json"), "w", encoding="utf-8") as f:
+            with open(os.path.join('scrapedata', f"{company_name}_search_results.json"), "w", encoding="utf-8") as f:
                 json.dump(search_results, f, ensure_ascii=False, indent=4)
 
             
@@ -139,7 +140,6 @@ def index():
                         writer.writerow(["Query Company Name", "Real Company Name", "Organization Number", "Industry", "URL", "Remarks"])
                     for result in results:
                         try:
-                            result["real_company_name"] = company_name_preprocessing(result["real_company_name"])
                             writer.writerow([result["company"], result["real_company_name"], result["orgnrs"][0], result["industry"], result["url"], result.get("remarks", "")])
                         except Exception as e:
                             print(e)
