@@ -9,8 +9,8 @@ import os
 from fomulateurl import formulate_url
 app = Flask(__name__)
 
-def search_company(company_name):
-    #preprocess the company name to remove special characters and spaces, and make it lowercase,replace the space with %20
+def company_name_preprocessing(company_name):
+        #preprocess the company name to remove special characters and spaces, and make it lowercase,replace the space with %20
     company_name = company_name.replace(" ", "%20") 
     company_name = company_name.replace("ä", "a")
     company_name = company_name.replace("ö", "o")
@@ -26,6 +26,13 @@ def search_company(company_name):
     company_name = company_name.replace("!", "")
     company_name = company_name.replace("/", "%20")
     company_name = company_name.replace("&", "%26")
+    return company_name
+
+
+def search_company(company_name):
+    #preprocess the company name to remove special characters and spaces, and make it lowercase,replace the space with %20
+    company_name = company_name_preprocessing(company_name)
+
     url = f"https://www.allabolag.se/what/{company_name}"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -132,6 +139,7 @@ def index():
                         writer.writerow(["Query Company Name", "Real Company Name", "Organization Number", "Industry", "URL", "Remarks"])
                     for result in results:
                         try:
+                            result["real_company_name"] = company_name_preprocessing(result["real_company_name"])
                             writer.writerow([result["company"], result["real_company_name"], result["orgnrs"][0], result["industry"], result["url"], result.get("remarks", "")])
                         except Exception as e:
                             print(e)
