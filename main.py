@@ -49,10 +49,11 @@ def index():
     global progress 
     global total
     if request.method == 'POST':
+        global query_process_flag
         if query_process_flag:
             return render_template('index.html', results=results, error="Please wait for the previous query to finish or terminate it")
         #start the query process
-        global query_process_flag
+
         query_process_flag = True
         company_list = request.form.get('company_list', '').split('\n')
         company_list = [company.strip() for company in company_list if company.strip()]
