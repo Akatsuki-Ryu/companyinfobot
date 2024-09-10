@@ -62,8 +62,8 @@ def index():
     global total
     if request.method == 'POST':
         global query_process_flag
-        # if query_process_flag:
-            # return render_template('index.html', results=results, error="Please wait for the previous query to finish or terminate it")
+        if query_process_flag:
+            return render_template('index.html', results=results, error="Please wait for the previous query to finish or terminate it")
         #start the query process
 
         query_process_flag = True
