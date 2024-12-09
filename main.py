@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, send_file, jsonify
 import requests
 from bs4 import BeautifulSoup
 import time
-from extract_search_results import extract_search_results
+from extract_search_results import extract_orgnr_from_results
 import os
 
 from fomulateurl import formulate_url
@@ -33,23 +33,21 @@ def search_company(company_name):
     #preprocess the company name to remove special characters and spaces, and make it lowercase,replace the space with %20
     company_name = company_name_preprocessing(company_name)
 
-    url = f"https://www.allabolag.se/what/{company_name}"
+    url = f"https://www.allabolag.se/bransch-sök?q={company_name}"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.content, 'html.parser')
-    results = soup.find_all(class_="search-results")
-    return str(results[0]) if results else "No results found"
+    next_data_script = soup.find('script', {'id': '__NEXT_DATA__'})
+    if next_data_script:
+        json_data = json.loads(next_data_script.string)
+        results = json_data.get('props', {}).get('pageProps', {}).get('hydrationData', {}).get('searchStore', {}).get('companies', {}).get('companies', [])
+        print(results[0])
+        return results[0] if results else None
+    else:
+        return None
 
-def extract_orgnr_from_results(results):
-    soup = BeautifulSoup(results, 'html.parser')
-    orgnrs = []
-    for result in soup.find_all('search'):
-        orgnr = result.get('orgnr')
-        if orgnr:
-            orgnrs.append(orgnr)
-    return orgnrs
 
 progress = 0
 total = 0
@@ -88,19 +86,8 @@ def index():
                 #if the query process is terminated, break the loop
                 break
 
-            raw_search_results = search_company(company)
-            try:
-                search_results = extract_search_results(raw_search_results)
-            except Exception as e:
-                #if the search results are not found, try again after 2 seconds, try 5 times, ignore the error
-                for i in range(5):
-                    time.sleep(2)
-                    try:
-                        search_results = extract_search_results(raw_search_results)
-                    except Exception as e:
-                        continue
-                    if search_results:
-                        break
+            search_results = search_company(company)
+
             
             # Write search results to a file in the scrapedata folder and beautify it
             import os
@@ -117,10 +104,16 @@ def index():
             
             if search_results:
                 #only get the first result from the search results
-                orgnr = search_results[0].get('orgnr', 'Not found')
-                real_company_name = search_results[0].get('jurnamn', 'Not found')
-                industry = search_results[0].get('abv_hgrupp', 'Not found')
-                url = formulate_url(orgnr)
+                orgnr = search_results.get('orgnr', 'Not found')
+                print(orgnr)
+
+
+                # real_company_name = search_results.get('name', 'Not found')
+                # industry = search_results.get('industries', 'Not found')
+                real_company_name = "na"
+                industry = "na"
+                # url = formulate_url(orgnr)
+                url = "na"
                 if company != real_company_name:
                     results.append({"remarks": "check company name", "company": company, "real_company_name": real_company_name, "orgnrs": [orgnr], "industry": industry, "url": url})
                 else:
@@ -139,6 +132,7 @@ def index():
                     if f.tell() == 0:
                         writer.writerow(["Query Company Name", "Real Company Name", "Organization Number", "Industry", "URL", "Remarks"])
                     for result in results:
+                        print(result)
                         try:
                             writer.writerow([result["company"], result["real_company_name"], result["orgnrs"][0], result["industry"], result["url"], result.get("remarks", "")])
                         except Exception as e:
@@ -152,7 +146,6 @@ def index():
             #     results.append({"company": company, "orgnrs": orgnrs})
             # else:
             #     results.append({"company": company, "orgnrs": ["Not found"]})
-            print(search_results)
             progress += 1
             # time.sleep(0.5) #anti spamming measure
 
