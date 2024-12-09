@@ -45,10 +45,51 @@ def search_company(company_name):
     if next_data_script:
         json_data = json.loads(next_data_script.string)
         results = json_data.get('props', {}).get('pageProps', {}).get('hydrationData', {}).get('searchStore', {}).get('companies', {}).get('companies', [])
-        print(results)
-        return results[0] if results else None
+        # print("raw results")
+        # print(results)
+        return results if results else None
     else:
         return None
+
+def search_closest_result(company_name, results):
+    # If results is empty or None, return None
+    if not results:
+        return None
+    
+    # Initialize variables to track the best match
+    best_match = None
+    best_similarity = 0
+    
+    # Convert company name to lowercase for comparison
+    company_name = company_name.lower()
+    
+    for result in results:
+        # Get the company name from the result
+        result_name = result.get('name', '').lower()
+        
+        # Calculate similarity score
+        similarity = calculate_similarity(company_name, result_name)
+        
+        # Update best match if this is the most similar so far
+        if similarity > best_similarity:
+            best_similarity = similarity
+            best_match = result
+    
+    # Only return a match if it's reasonably similar (threshold of 0.6)
+    return best_match if best_similarity >= 0.6 else None
+
+def calculate_similarity(str1, str2):
+    """Calculate string similarity using a simple algorithm."""
+    # Convert strings to sets of characters
+    set1 = set(str1)
+    set2 = set(str2)
+    
+    # Calculate Jaccard similarity
+    intersection = len(set1.intersection(set2))
+    union = len(set1.union(set2))
+    
+    return intersection / union if union > 0 else 0
+
 
 
 progress = 0
@@ -106,7 +147,14 @@ def index():
             
             if search_results:
                 #only get the first result from the search results
+                print("search results")
                 print(search_results)
+                search_results = search_closest_result(company_name, search_results)
+                print("best match search results")
+                print(search_results)
+                if not search_results:
+                    results.append({"company": company, "orgnrs": ["Not found"], "industry": "Not found"})
+                    continue
                 orgnr = search_results.get('orgnr', 'Not found')
                 orgnr = format_orgnr(orgnr)
 
