@@ -31,6 +31,7 @@ def company_name_preprocessing(company_name):
 
 
 def search_company(company_name):
+    time.sleep(2)
     #preprocess the company name to remove special characters and spaces, and make it lowercase,replace the space with %20
     company_name = company_name_preprocessing(company_name)
 
@@ -44,7 +45,7 @@ def search_company(company_name):
     if next_data_script:
         json_data = json.loads(next_data_script.string)
         results = json_data.get('props', {}).get('pageProps', {}).get('hydrationData', {}).get('searchStore', {}).get('companies', {}).get('companies', [])
-        print(results[0])
+        print(results)
         return results[0] if results else None
     else:
         return None
