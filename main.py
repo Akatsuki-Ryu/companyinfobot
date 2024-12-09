@@ -31,7 +31,7 @@ def company_name_preprocessing(company_name):
 
 
 def search_company(company_name):
-    time.sleep(2)
+    time.sleep(1)
     #preprocess the company name to remove special characters and spaces, and make it lowercase,replace the space with %20
     company_name = company_name_preprocessing(company_name)
 
