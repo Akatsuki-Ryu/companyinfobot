@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 from extract_search_results import extract_orgnr_from_results
+from extract_search_results import format_orgnr
 import os
 
 from fomulateurl import formulate_url
@@ -104,13 +105,15 @@ def index():
             
             if search_results:
                 #only get the first result from the search results
+                print(search_results)
                 orgnr = search_results.get('orgnr', 'Not found')
-                print(orgnr)
+                orgnr = format_orgnr(orgnr)
 
 
-                # real_company_name = search_results.get('name', 'Not found')
+
+                real_company_name = search_results.get('name', 'Not found')
                 # industry = search_results.get('industries', 'Not found')
-                real_company_name = "na"
+                # real_company_name = "na"
                 industry = "na"
                 # url = formulate_url(orgnr)
                 url = "na"

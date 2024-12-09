@@ -13,6 +13,6 @@ def extract_orgnr_from_results(results):
 
 def format_orgnr(orgnr):
     # the input would be like this 5020590237, make it like this 502059-0237
-    orgnr = orgnr[:3] + "-" + orgnr[3:]
+    orgnr = f"{orgnr[:6]}-{orgnr[6:]}"
     return orgnr
 
