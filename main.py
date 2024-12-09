@@ -63,28 +63,47 @@ def search_closest_result(company_name, results):
     # Convert company name to lowercase for comparison
     company_name = company_name.lower()
     
-    for result in results:
-        # Get the company name from the result
+    # First pass: look for exact matches after potential ads
+    for i, result in enumerate(results):
+        # Skip if it's likely an advertisement (usually first few results)
+        if i < 3 and (result.get('advertType') or 'annons' in str(result).lower()):
+            continue
+            
         result_name = result.get('name', '').lower()
-        
-        # Calculate similarity score
         similarity = calculate_similarity(company_name, result_name)
         
+        # If we find a very good match (>0.8), return it immediately
+        if similarity > 0.8:
+            return result
+            
         # Update best match if this is the most similar so far
         if similarity > best_similarity:
             best_similarity = similarity
             best_match = result
     
-    # Only return a match if it's reasonably similar (threshold of 0.6)
-    return best_match if best_similarity >= 0.6 else None
+    # Only return a match if it's reasonably similar
+    return best_match if best_similarity >= 0.3 else None
 
 def calculate_similarity(str1, str2):
-    """Calculate string similarity using a simple algorithm."""
-    # Convert strings to sets of characters
+    """Calculate string similarity with priority for keyword matches.
+    str1: input search term (typically shorter/abbreviation)
+    str2: full company name from results
+    """
+    # Convert strings to lowercase for comparison
+    str1 = str1.lower()
+    str2 = str2.lower()
+    
+    # Split input into keywords
+    keywords = str1.split()
+    
+    # Check if any keyword is fully contained in the company name
+    for keyword in keywords:
+        if keyword in str2:
+            return 1.0  # Perfect match if any keyword is found
+    
+    # If no keyword matches, fall back to Jaccard similarity
     set1 = set(str1)
     set2 = set(str2)
-    
-    # Calculate Jaccard similarity
     intersection = len(set1.intersection(set2))
     union = len(set1.union(set2))
     
