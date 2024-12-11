@@ -73,7 +73,7 @@ def search_closest_result(company_name, results):
         similarity = calculate_similarity(company_name, result_name)
         
         # If we find a very good match (>0.8), return it immediately
-        if similarity > 0.8:
+        if similarity > 0.3:
             return result
             
         # Update best match if this is the most similar so far
